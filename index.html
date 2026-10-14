@@ -59,6 +59,11 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 .panel h2{font-family:'Lilita One';font-weight:400;font-size:34px;margin:0;letter-spacing:.03em}
 .panel .lede{margin:4px 0 14px;font-size:16px;opacity:.8}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tabs{display:flex;gap:6px;margin:-4px 0 12px;overflow-x:auto}
+.tab{flex:1;min-width:0;border:3px solid var(--ink);border-radius:14px;padding:7px 6px;background:#fff;font-family:'Lilita One';font-size:14px;line-height:1.05;text-align:center;white-space:nowrap}
+.tab small{display:block;font-family:Nunito;font-weight:900;font-size:10.5px;opacity:.65;margin-top:2px}
+.tab.on{background:var(--mango);box-shadow:0 3px 0 var(--ink)}
+.tab.night.on{background:#6d7fd6;color:#fff}.tab.school.on{background:#79c6e8}
 .lv{aspect-ratio:1;border:3px solid var(--ink);border-radius:16px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 4px 0 var(--ink)}
 .lv b{font-family:'Lilita One';font-weight:400;font-size:28px;line-height:1}
 .lv .st{font-size:13px;letter-spacing:1px;color:#c98a12}
@@ -95,6 +100,11 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 .chip{display:flex;align-items:center;gap:5px;background:rgba(251,241,220,.95);border:3px solid var(--ink);border-radius:12px;padding:3px 9px 3px 5px;font-family:'Lilita One';font-size:17px;box-shadow:0 3px 0 var(--ink)}
 .chip svg{width:22px;height:22px}
 .chip.done{background:#a9e2b6}
+.nepa{display:none;align-items:center;gap:6px;margin-top:6px;font-family:'Lilita One';color:#ffe39a;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;font-size:15px}
+.nepa.on{display:flex}.nepa.off{color:#9aa3c7}
+.chip.timer.low{background:#ffb4a6;animation:bshake .5s infinite}
+.shout{position:fixed;left:0;right:0;top:27%;text-align:center;z-index:12;pointer-events:none;font-family:'Lilita One';font-size:clamp(46px,14vw,90px);color:var(--mango);-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;text-shadow:0 7px 0 var(--ink);animation:shout .9s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes shout{0%{transform:scale(.2) rotate(-12deg);opacity:0}25%{transform:scale(1.1) rotate(-4deg);opacity:1}80%{transform:scale(1) rotate(-4deg);opacity:1}100%{transform:scale(1.1) rotate(-4deg);opacity:0}}
 .wind{display:none;align-items:center;gap:6px;margin-top:6px;font-family:'Lilita One';color:var(--cream);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;font-size:15px}
 .wind.on{display:flex}
 .wind i{display:inline-block;font-style:normal;font-size:20px}
@@ -139,6 +149,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
     <div>
       <div class="lvname" id="lvName"></div>
       <div class="goals" id="goals"></div>
+      <div class="chip timer" id="timer" style="display:none;margin-top:6px;width:max-content"></div>
+      <div class="nepa" id="nepa">💡 <span id="nepaTxt">LIGHT DEY</span></div>
       <div class="wind" id="wind"><i id="windArrow">➜</i><span id="windTxt"></span></div>
     </div>
     <div class="bababox"><img id="babaFace" src="assets/baba-sleep.webp" alt="Baba"><div class="meter"><i id="meter"></i></div><div class="mlabel">NOISE</div></div>
@@ -157,6 +169,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
   <div class="sub">Knock am. No wake Baba.</div>
   <div class="stack">
     <button class="btn" id="bPlay">PLAY</button>
+    <button class="btn green" id="bRush">MANGO RUSH <small id="rushBest" style="font-size:14px;margin-left:8px;opacity:.75"></small></button>
     <button class="link" id="bHow">How to play</button>
   </div>
   <div class="foot">Made in 7 days for Project Treetop</div>
@@ -164,7 +177,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 
 <section class="screen veil" id="s-levels">
   <div class="panel">
-    <h2>BABA'S COMPOUND</h2>
+    <div class="tabs" id="worldTabs"></div>
+    <h2 id="worldName">BABA'S COMPOUND</h2>
     <div class="lede" id="lvLede">12 raids. Every tin, every mango, no wahala.</div>
     <div class="grid" id="lvGrid"></div>
     <div class="rowb"><button class="btn small white" id="bLvBack">BACK</button><span id="lvTotal" style="font-family:'Lilita One';font-size:18px"></span></div>

@@ -16,21 +16,31 @@ Built from scratch for **Twigpine Project Treetop, Round 01 (Games)**, 9 to 16 O
 - **Tins are loud and mangoes are soft.** The noise slowly fades while Baba dozes off again. If the meter fills, you get 4 seconds before he reaches you.
 - **Stars:** clear the level, keep Baba asleep, and finish with stones to spare.
 
-## Levels
+## Worlds and modes
 
-There are 12 raids:
-1. Three Tins
-2. Small Pyramid
-3. First Mangoes
-4. Mind The Window
-5. The Veranda
-6. Harmattan (wind)
-7. Swinging Tin
-8. High Mangoes
-9. Light Sleeper
-10. Tight Gaps
-11. Evening Raid
-12. Baba Dey Look: don't shoot while he's at the window
+- **Baba's Compound** (12 raids):
+  1. Three Tins
+  2. Small Pyramid
+  3. First Mangoes
+  4. Mind The Window
+  5. The Veranda
+  6. Harmattan (wind)
+  7. Swinging Tin
+  8. High Mangoes
+  9. Light Sleeper
+  10. Tight Gaps
+  11. Evening Raid
+  12. Baba Dey Look
+- **NEPA Night** (6 raids): the same compound after dark, with fireflies, crickets and a lamp in the window.
+  - Every few seconds NEPA takes light and the street goes dark.
+  - Baba's generator then kicks in and covers your noise.
+  - You can shoot loud while the power is out, but you can barely see. When the light comes back, the whole street shouts "UP NEPA!".
+- **School Compound** (6 raids): the Headmaster's orange tree, glass louvre windows, and a Headmaster with a cane.
+- **Mango Rush**: a 60-second score attack.
+  - Tins keep coming back in new formations, and mangoes regrow.
+  - Golden mangoes are worth +500 and add 5 seconds. Gold power tins give a TRIPLE SHOT or a BIG STONE.
+  - Hits build a streak multiplier. Wake Baba and the run is over.
+- **The agama lizard** sits on the wall doing push-ups. Miss everything and it laughs at you. Hit near it and it runs off.
 
 ## Tech
 

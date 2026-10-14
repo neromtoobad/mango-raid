@@ -75,6 +75,18 @@ export const fx = {
   win() { if (!ctx) return; const t = now(); [523, 659, 784, 1046, 1318].forEach((f, k) => { tone('triangle', f, f, t + k * 0.08, 0.004, 0.16, 0.35); tone('sine', f / 2, f / 2, t + k * 0.08, 0.004, 0.08, 0.3); }); },
   fail() { if (!ctx) return; const t = now(); [392, 370, 349, 262].forEach((f, k) => tone('triangle', f, f * 0.97, t + k * 0.16, 0.004, 0.15, 0.3)); },
   click() { if (!ctx) return; const t = now(); tone('square', 900, 600, t, 0.001, 0.07, 0.05); },
+  bell() { if (!ctx) return; const t = now(); for (let k = 0; k < 6; k++) { [1, 2.76, 5.4].forEach((r, i) => tone('sine', 1180 * r, 0, t + k * 0.16, 0.001, 0.12 / (i + 1), 0.5)); } },
+  cheer() { // the whole street: "UP NEPA!"
+    if (!ctx) return; const t = now();
+    for (let k = 0; k < 9; k++) voice(t + Math.random() * 0.25, 260 + Math.random() * 200, 380 + Math.random() * 120, 0.9, 0.05, [650 + Math.random() * 200, 1100 + Math.random() * 300]);
+    burst('bandpass', 1200, 0.5, t, 0.1, 0.12, 0.9);
+  },
+  blackout() { if (!ctx) return; const t = now(); tone('sine', 220, 40, t, 0.003, 0.25, 0.35); burst('lowpass', 400, 1, t, 0.002, 0.2, 0.2); },
+  laugh() { // agama 'kekeke'
+    if (!ctx) return; const t = now(); for (let k = 0; k < 5; k++) tone('square', 1500 - k * 90, 1100, t + k * 0.075, 0.002, 0.045, 0.05);
+  },
+  power() { if (!ctx) return; const t = now(); [523, 784, 1046, 1568, 2093].forEach((f, k) => tone('sawtooth', f, f * 1.01, t + k * 0.05, 0.004, 0.06, 0.18)); },
+  gold() { if (!ctx) return; const t = now(); [1318, 1568, 2093, 2637].forEach((f, k) => { tone('sine', f, f, t + k * 0.06, 0.002, 0.12, 0.4); }); },
   hmm() { // Baba stirs
     if (!ctx) return; const t = now(); voice(t, 130, 110, 0.5, 0.25, [500, 900]);
   },
@@ -108,14 +120,39 @@ export function setSnore(level) {
   snore.f.frequency.setTargetAtTime(cyc < 0.45 ? 220 : 380, t, 0.1);
 }
 
-// ambience: birds
+// Baba's generator: a chugging hum that covers your noise
+let gen = null;
+export function setGen(on) {
+  if (!ctx) return;
+  if (on && !gen) {
+    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
+    o.type = 'sawtooth'; o.frequency.value = 48; o2.type = 'square'; o2.frequency.value = 96.5;
+    f.type = 'lowpass'; f.frequency.value = 420; f.Q.value = 3;
+    lfo.frequency.value = 11; lg.gain.value = 0.05; lfo.connect(lg); lg.connect(g.gain);
+    g.gain.value = 0; o.connect(f); o2.connect(f); f.connect(g); g.connect(sfx);
+    const n = ctx.createBufferSource(); n.buffer = noise; n.loop = true; const nf = ctx.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = 900; const ng = ctx.createGain(); ng.gain.value = 0.03; n.connect(nf); nf.connect(ng); ng.connect(g);
+    o.start(); o2.start(); lfo.start(); n.start();
+    g.gain.setTargetAtTime(0.11, now(), 0.4);
+    gen = { stop() { const t = now(); g.gain.setTargetAtTime(0, t, 0.15); [o, o2, lfo, n].forEach(x => x.stop(t + 0.8)); } };
+  } else if (!on && gen) { gen.stop(); gen = null; }
+}
+
+// ambience: birds by day, crickets by night
+let ambEnv = 'day';
+export function setEnv(e) { ambEnv = e; }
 export function frame(dt) {
   if (!ctx) return;
   birdsT -= dt;
   if (birdsT < 0) {
-    birdsT = 1.5 + Math.random() * 4;
-    const t = now(), n = 2 + Math.floor(Math.random() * 3), f = 2800 + Math.random() * 1800;
-    for (let k = 0; k < n; k++) tone('sine', f, f * (Math.random() < 0.5 ? 1.3 : 0.75), t + k * 0.11, 0.005, 0.025, 0.07);
+    const t = now();
+    if (ambEnv === 'night') {
+      birdsT = 0.35 + Math.random() * 0.6;
+      const f = 4200 + Math.random() * 600; for (let k = 0; k < 3; k++) tone('sine', f, f, t + k * 0.045, 0.002, 0.018, 0.025);
+    } else {
+      birdsT = 1.5 + Math.random() * 4;
+      const n = 2 + Math.floor(Math.random() * 3), f = 2800 + Math.random() * 1800;
+      for (let k = 0; k < n; k++) tone('sine', f, f * (Math.random() < 0.5 ? 1.3 : 0.75), t + k * 0.11, 0.005, 0.025, 0.07);
+    }
   }
 }
 
