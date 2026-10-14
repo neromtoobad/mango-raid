@@ -668,9 +668,16 @@ function catGeom() {
 function reticle() {
   const g = catGeom();
   let dx = aim.x - aim.sx, dy = aim.y - aim.sy; const l = Math.hypot(dx, dy); if (l > g.maxPull) { dx *= g.maxPull / l; dy *= g.maxPull / l; }
-  const k = 1.2;
-  const a0 = aimHome(); a0.y += g.maxPull * 0.35 * k;   // a medium straight pull lands on the tins
-  let rx = a0.x - dx * k, ry = a0.y - dy * k;
+  // aim uses each axis on its own, so a diagonal pull doesn't cost height
+  const ax = clamp(aim.x - aim.sx, -g.maxPull, g.maxPull), ay = clamp(aim.y - aim.sy, -g.maxPull * 0.5, g.maxPull);
+  const home = aimHome(), p0 = 0.35, p = ay / g.maxPull;
+  let ry;
+  if (p <= p0) ry = home.y + (p0 - p) * g.maxPull * 1.2;      // a medium straight pull lands on the tins
+  else {                                                     // past that it speeds up so a full pull reaches the treetop
+    const q = (p - p0) / (1 - p0), span = home.y - H * 0.09;
+    ry = home.y - span * (0.45 * q + 0.55 * q * q);
+  }
+  let rx = home.x - ax * 1.25;
   // arm shake if held too long
   const sh = clamp((aim.t - 1.2) / 2, 0, 1) * Math.min(W, H) * 0.06;
   const tt = performance.now() / 1000;
@@ -686,7 +693,7 @@ function drawOverlay(dt) {
   if (!S.playing || !IMG.lhand) return;
   const g = catGeom();
   let px = g.rest.x, py = g.rest.y, pull = 0, ret = null;
-  if (aim.active) { ret = reticle(); pull = ret.pull; px = g.rest.x + ret.dx; py = g.rest.y + ret.dy; }
+  if (aim.active) { ret = reticle(); pull = ret.pull; px = g.rest.x + ret.dx; py = Math.min(g.rest.y + ret.dy, H - g.ih * 0.2); }
   if (aim.snap > 0) { aim.snap -= dt; }
   aim.vib = Math.max(0, aim.vib - dt * 3);
   const vib = Math.sin(performance.now() / 18) * aim.vib * 14;
