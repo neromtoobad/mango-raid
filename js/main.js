@@ -668,8 +668,8 @@ function catGeom() {
 function reticle() {
   const g = catGeom();
   let dx = aim.x - aim.sx, dy = aim.y - aim.sy; const l = Math.hypot(dx, dy); if (l > g.maxPull) { dx *= g.maxPull / l; dy *= g.maxPull / l; }
-  const k = 1.5;
-  const a0 = aimHome();
+  const k = 1.2;
+  const a0 = aimHome(); a0.y += g.maxPull * 0.35 * k;   // a medium straight pull lands on the tins
   let rx = a0.x - dx * k, ry = a0.y - dy * k;
   // arm shake if held too long
   const sh = clamp((aim.t - 1.2) / 2, 0, 1) * Math.min(W, H) * 0.06;
