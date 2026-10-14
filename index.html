@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>MANGO RAID · knock am, no wake Baba</title>
+<meta name="description" content="A first-person catapult game in a Lagos lane. Knock tins off Baba's wall and mangoes off his tree, and keep it quiet.">
+<meta name="theme-color" content="#e9a03b">
+<meta property="og:title" content="MANGO RAID">
+<meta property="og:description" content="Knock tins off Baba's wall and mangoes off his tree with your catapult. Every clang wakes Baba up.">
+<meta property="og:image" content="https://mangoraid.nerom.site/og.jpg">
+<meta property="og:url" content="https://mangoraid.nerom.site/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MANGO RAID">
+<meta name="twitter:description" content="Knock am. No wake Baba. A catapult game from a Lagos lane.">
+<meta name="twitter:image" content="https://mangoraid.nerom.site/og.jpg">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3a1d0e;--cream:#fbf1dc;--mango:#f2a524;--leaf:#2f8f4e;--red:#d9473a;--sky:#f6dcae;--shadow:0 5px 0 var(--ink)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#d9a35f;color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-weight:800;-webkit-user-select:none;user-select:none;touch-action:none;overscroll-behavior:none}
+#gl,#ov{position:fixed;inset:0;width:100%;height:100%;display:block}
+#ov{pointer-events:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:'Lilita One';font-size:22px;letter-spacing:.04em;padding:14px 28px;border-radius:18px;border:3px solid var(--ink);background:var(--mango);box-shadow:var(--shadow);min-width:210px;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn.white{background:var(--cream)} .btn.green{background:#6cc386} .btn.small{font-size:17px;padding:10px 18px;min-width:0;border-radius:14px}
+.link{font-weight:900;text-decoration:underline;text-underline-offset:3px;color:var(--cream);font-size:16px;padding:8px;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));z-index:20}
+.screen.on{display:flex;animation:fade .25s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.veil{background:radial-gradient(ellipse at center,rgba(58,29,14,.3),rgba(40,16,6,.8))}
+.big{font-family:'Lilita One';color:var(--cream);-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;text-shadow:0 7px 0 var(--ink);line-height:.95;text-align:center}
+
+/* title */
+#s-title{background:url(assets/cover.jpg) center/cover;justify-content:flex-start;padding-top:max(8vh,env(safe-area-inset-top))}
+#s-title::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(40,16,6,.55),rgba(40,16,6,0) 40%,rgba(40,16,6,0) 60%,rgba(40,16,6,.75))}
+#s-title>*{position:relative}
+#s-title .big{font-size:clamp(64px,19vw,132px)}
+#s-title .big span{display:block;color:var(--mango)}
+#s-title .sub{color:var(--cream);font-size:clamp(17px,4.6vw,22px);margin:12px 0 0;text-shadow:0 2px 0 rgba(0,0,0,.5);text-align:center}
+#s-title .stack{position:absolute;bottom:max(70px,calc(env(safe-area-inset-bottom) + 60px));left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+#s-title .foot{position:absolute;bottom:max(14px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;color:rgba(251,241,220,.85);font-size:13px}
+.zzz{position:absolute;top:max(14px,env(safe-area-inset-top));left:14px;display:flex;align-items:center;gap:6px}
+.zzz img{width:64px;height:64px;border-radius:50%;border:3px solid var(--ink);background:#f3e6cf;object-fit:cover;object-position:top;box-shadow:0 3px 0 var(--ink)}
+.zzz b{font-family:'Lilita One';font-weight:400;color:var(--cream);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;font-size:20px;animation:zz 2s infinite}
+@keyframes zz{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(-6px);opacity:1}}
+.corner{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;z-index:30;width:46px;height:46px;border-radius:14px;border:3px solid var(--ink);background:var(--cream);box-shadow:0 3px 0 var(--ink);display:flex;align-items:center;justify-content:center}
+.corner:active{transform:translateY(3px);box-shadow:none}
+.corner svg{width:24px;height:24px}
+
+/* panels */
+.panel{background:var(--cream);border:3px solid var(--ink);border-radius:24px;box-shadow:0 7px 0 var(--ink);width:min(560px,100%);max-height:100%;overflow:auto;padding:20px}
+.panel h2{font-family:'Lilita One';font-weight:400;font-size:34px;margin:0;letter-spacing:.03em}
+.panel .lede{margin:4px 0 14px;font-size:16px;opacity:.8}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.lv{aspect-ratio:1;border:3px solid var(--ink);border-radius:16px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 4px 0 var(--ink)}
+.lv b{font-family:'Lilita One';font-weight:400;font-size:28px;line-height:1}
+.lv .st{font-size:13px;letter-spacing:1px;color:#c98a12}
+.lv.lock{background:#e7d6b8;box-shadow:none;opacity:.6}
+.lv.next{background:#ffe3a8}
+.rowb{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap}
+.how{display:grid;gap:12px;margin:10px 0 16px}
+.how div{display:flex;gap:12px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:10px 12px}
+.how .n{font-family:'Lilita One';font-size:26px;width:42px;height:42px;flex:none;border-radius:50%;background:var(--mango);border:3px solid var(--ink);display:flex;align-items:center;justify-content:center}
+.how p{margin:0;font-size:15px} .how p b{font-family:'Lilita One';font-weight:400;font-size:18px;display:block}
+
+/* result */
+.res{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.res .big{font-size:clamp(40px,11vw,64px)}
+.res .face{width:150px;height:150px;border-radius:50%;border:4px solid var(--ink);background:#f3e6cf;object-fit:cover;object-position:top;box-shadow:0 5px 0 var(--ink)}
+.res .msg{color:var(--cream);font-size:18px;max-width:440px;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.stars{display:flex;gap:8px}
+.stars i{width:58px;height:58px;display:block;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z" fill="%23e7d6b8" stroke="%233a1d0e" stroke-width="1.6" stroke-linejoin="round"/></svg>') center/contain no-repeat}
+.stars i.on{background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z" fill="%23f2a524" stroke="%233a1d0e" stroke-width="1.6" stroke-linejoin="round"/></svg>');animation:starin .45s cubic-bezier(.2,1.8,.4,1) both}
+@keyframes starin{from{transform:scale(0) rotate(-40deg)}to{transform:none}}
+.criteria{display:grid;gap:4px;font-size:14px;color:var(--cream);text-shadow:0 1px 0 rgba(0,0,0,.5)}
+.criteria span.ok::before{content:'✔ ';color:#7be08f} .criteria span.no::before{content:'✘ ';color:#ff8d7a}
+.score{font-family:'Lilita One';font-size:34px;color:var(--mango);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 4px 0 var(--ink)}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.row .btn{min-width:150px}
+
+/* HUD */
+#hud{position:fixed;left:0;right:0;top:0;z-index:10;display:none;padding:max(10px,env(safe-area-inset-top)) 12px 0;pointer-events:none}
+#hud.on{display:block}
+.hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.lvname{font-family:'Lilita One';color:var(--cream);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;font-size:18px;line-height:1.05;text-shadow:0 2px 0 var(--ink)}
+.lvname small{display:block;font-size:13px;color:var(--mango)}
+.goals{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:5px;background:rgba(251,241,220,.95);border:3px solid var(--ink);border-radius:12px;padding:3px 9px 3px 5px;font-family:'Lilita One';font-size:17px;box-shadow:0 3px 0 var(--ink)}
+.chip svg{width:22px;height:22px}
+.chip.done{background:#a9e2b6}
+.wind{display:none;align-items:center;gap:6px;margin-top:6px;font-family:'Lilita One';color:var(--cream);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;font-size:15px}
+.wind.on{display:flex}
+.wind i{display:inline-block;font-style:normal;font-size:20px}
+.bababox{display:flex;flex-direction:column;align-items:center;gap:4px;margin-right:56px}
+.bababox img{width:58px;height:58px;border-radius:50%;border:3px solid var(--ink);background:#f3e6cf;object-fit:cover;object-position:top;box-shadow:0 3px 0 var(--ink);transition:transform .15s}
+.bababox img.shake{animation:bshake .3s}
+@keyframes bshake{25%{transform:rotate(-10deg) scale(1.1)}75%{transform:rotate(10deg) scale(1.1)}}
+.meter{width:84px;height:14px;border-radius:8px;border:3px solid var(--ink);background:rgba(58,29,14,.55);overflow:hidden;position:relative}
+.meter i{position:absolute;inset:0;background:#7bd08c;transform-origin:left;transform:scaleX(0)}
+.meter i.mid{background:var(--mango)} .meter i.hi{background:#e5513e}
+.mlabel{font-family:'Lilita One';font-size:11px;letter-spacing:.08em;color:var(--cream);-webkit-text-stroke:2.5px var(--ink);paint-order:stroke fill}
+.stones{position:fixed;left:14px;bottom:max(14px,env(safe-area-inset-bottom));z-index:10;display:none;gap:5px;align-items:center;pointer-events:none}
+.stones.on{display:flex}
+.stones i{width:22px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d9d3c7,#8e877b 70%);border:2.5px solid var(--ink);display:block}
+.stones i.used{opacity:.22}
+#hudPause{pointer-events:auto}
+#banner{position:fixed;left:0;right:0;top:34%;z-index:12;text-align:center;pointer-events:none;display:none}
+#banner.on{display:block;animation:pop .45s cubic-bezier(.2,1.7,.4,1)}
+#banner .t{font-family:'Lilita One';font-size:clamp(44px,13vw,92px);line-height:1;color:var(--cream);-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;text-shadow:0 7px 0 var(--ink)}
+#banner .s{font-family:'Lilita One';font-size:clamp(18px,5vw,28px);color:var(--mango);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 3px 0 var(--ink);margin-top:6px}
+#banner.red .t{color:#ff7a62}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+#hint{position:fixed;left:50%;top:60%;transform:translateX(-50%);z-index:11;pointer-events:none;background:rgba(58,29,14,.85);color:var(--cream);border-radius:14px;padding:10px 16px;font-size:16px;text-align:center;display:none;max-width:86vw}
+#hint.on{display:block;animation:fade .3s}
+.pops{position:fixed;inset:0;pointer-events:none;z-index:9;overflow:hidden}
+.pp{position:absolute;font-family:'Lilita One';color:var(--cream);-webkit-text-stroke:4px var(--ink);paint-order:stroke fill;font-size:30px;transform:translate(-50%,-50%);animation:pp 1s ease-out forwards;white-space:nowrap}
+.pp.m{color:var(--mango)} .pp.r{color:#ff7a62} .pp.big{font-size:42px}
+@keyframes pp{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}15%{transform:translate(-50%,-60%) scale(1.15);opacity:1}100%{transform:translate(-50%,-160%) scale(1);opacity:0}}
+#count{position:fixed;left:0;right:0;top:20%;text-align:center;z-index:12;font-family:'Lilita One';font-size:84px;color:#ff7a62;-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink);display:none;pointer-events:none}
+#count.on{display:block}
+#flash{position:fixed;inset:0;z-index:8;pointer-events:none;background:#fff;opacity:0}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<canvas id="ov"></canvas>
+<div class="pops" id="pops"></div>
+<div id="flash"></div>
+
+<div id="hud">
+  <div class="hrow">
+    <div>
+      <div class="lvname" id="lvName"></div>
+      <div class="goals" id="goals"></div>
+      <div class="wind" id="wind"><i id="windArrow">➜</i><span id="windTxt"></span></div>
+    </div>
+    <div class="bababox"><img id="babaFace" src="assets/baba-sleep.webp" alt="Baba"><div class="meter"><i id="meter"></i></div><div class="mlabel">NOISE</div></div>
+  </div>
+</div>
+<button class="corner" id="hudPause" style="display:none" aria-label="Pause"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.5" fill="#3a1d0e"/><rect x="14" y="5" width="4" height="14" rx="1.5" fill="#3a1d0e"/></svg></button>
+<div class="stones" id="stones"></div>
+<div id="banner"><div class="t"></div><div class="s"></div></div>
+<div id="hint"></div>
+<div id="count"></div>
+<button class="corner" id="soundBtn" aria-label="Sound"></button>
+
+<section class="screen on" id="s-title">
+  <div class="zzz"><img src="assets/baba-sleep.webp" alt=""><b>Zzz</b></div>
+  <div class="big">MANGO<span>RAID</span></div>
+  <div class="sub">Knock am. No wake Baba.</div>
+  <div class="stack">
+    <button class="btn" id="bPlay">PLAY</button>
+    <button class="link" id="bHow">How to play</button>
+  </div>
+  <div class="foot">Made in 7 days for Project Treetop</div>
+</section>
+
+<section class="screen veil" id="s-levels">
+  <div class="panel">
+    <h2>BABA'S COMPOUND</h2>
+    <div class="lede" id="lvLede">12 raids. Every tin, every mango, no wahala.</div>
+    <div class="grid" id="lvGrid"></div>
+    <div class="rowb"><button class="btn small white" id="bLvBack">BACK</button><span id="lvTotal" style="font-family:'Lilita One';font-size:18px"></span></div>
+  </div>
+</section>
+
+<section class="screen veil" id="s-how">
+  <div class="panel">
+    <h2>HOW TO PLAY</h2>
+    <div class="how">
+      <div><span class="n">1</span><p><b>Pull and aim</b>Press anywhere and drag back. The crosshair moves the other way. Stones drop over distance, so aim a little high for far things.</p></div>
+      <div><span class="n">2</span><p><b>Let go</b>Release to fire. Don't hold too long or your arm starts to shake.</p></div>
+      <div><span class="n">3</span><p><b>Keep it quiet</b>Tins clang, mangoes thud. Fill the NOISE meter and Baba comes out with his cane. Never hit his window.</p></div>
+    </div>
+    <div style="text-align:center"><button class="btn" id="bHowOk">OYA, LET'S GO</button></div>
+  </div>
+</section>
+
+<section class="screen veil" id="s-result"><div class="res" id="resBody"></div></section>
+<section class="screen veil" id="s-pause">
+  <div class="res"><div class="big">PAUSED</div>
+    <div class="row"><button class="btn" id="bResume">BACK TO RAID</button><button class="btn white" id="bRestart">RESTART</button><button class="btn white" id="bQuit">LEVELS</button></div></div>
+</section>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
