@@ -988,8 +988,13 @@ function reticle() {
   const sh = clamp((aim.t - 1.2) / 2, 0, 1) * Math.min(W, H) * 0.06;
   const tt = performance.now() / 1000;
   rx += Math.sin(tt * 7.1) * sh + Math.sin(tt * 3.3) * sh * 0.5; ry += Math.cos(tt * 6.3) * sh * 0.8;
+  if (demoAim) return { rx: demoAim.rx, ry: demoAim.ry, dx, dy, pull: Math.hypot(dx, dy) / g.maxPull };
   return { rx: clamp(rx, 10, W - 10), ry: clamp(ry, 10, H - 10), dx, dy, pull: Math.hypot(dx, dy) / g.maxPull };
 }
+// used only by the trailer recorder: show the hand pulled back with the crosshair on a chosen point
+let demoAim = null;
+function demo(rx, ry, pullX, pullY) { if (rx === null) { demoAim = null; aim.active = false; return; } demoAim = { rx, ry }; aim.active = true; aim.t = 0; aim.sx = W / 2; aim.sy = H * 0.62; aim.x = aim.sx + pullX; aim.y = aim.sy + pullY; }
+function demoFire() { const r = demoAim; aim.active = false; aim.snap = 0.25; aim.vib = 1; demoAim = null; fire(r.rx / W * 2 - 1, -(r.ry / H * 2 - 1)); }
 function aimHome() {
   const v = new THREE.Vector3(0, CAP_TOP + 0.2, TIN_Z).project(camera);
   return { x: W / 2, y: (1 - v.y) / 2 * H };
@@ -1096,4 +1101,4 @@ function loop(now) {
   requestAnimationFrame(t => { last = t; loop(t); });
 })();
 
-window.__m = { ndc: (x, y, z) => { const v = new THREE.Vector3(x, y, z).project(camera); return [v.x, v.y]; }, S, WORLDS, startLevel, startRush, fire, world, camera, endLevel, save, goLevels, goTitle };
+window.__m = { ndc: (x, y, z) => { const v = new THREE.Vector3(x, y, z).project(camera); return [v.x, v.y]; }, S, WORLDS, startLevel, startRush, fire, world, camera, endLevel, save, goLevels, goTitle, demo, demoFire, scr: (x, y, z) => { const v = new THREE.Vector3(x, y, z).project(camera); return [(v.x + 1) / 2 * innerWidth, (1 - v.y) / 2 * innerHeight]; } };
