@@ -280,14 +280,14 @@ const COMPOUND_LEVELS = [
   { name: 'Harmattan', tip: 'The wind pushes your stone. Aim into it.', stones: 6, spare: 2, wind: -2.6, window: 1, tins: stack(0.1, [3, 2]), mangoes: [{ x: -0.9, y: 3.7, ripe: 1 }, { x: -1.6, y: 4.4, ripe: 1 }], goalMango: 2 },
   { name: 'Swinging Tin', tip: 'Cut it down: hit the swinging tin.', stones: 6, spare: 2, window: 1, tins: stack(0.5, [2, 1]), swing: { x: -0.5, y: 4.0, len: 1.05 } },
   { name: 'High Mangoes', tip: 'Green ones are wasted. Ripe only!', stones: 7, spare: 2, wind: 2.0, window: 1, mangoes: [{ x: -1.5, y: 4.6, ripe: 1 }, { x: -0.7, y: 5.1, ripe: 1 }, { x: 0.3, y: 4.5, ripe: 1 }, { x: -2.1, y: 3.9, ripe: 1 }, { x: -1.0, y: 4.0, ripe: 0 }, { x: -0.1, y: 5.0, ripe: 0 }], goalMango: 4 },
-  { name: 'Light Sleeper', tip: 'Baba sleeps light today. Few, clean shots.', stones: 6, spare: 1, sens: 1.7, window: 1, tins: stack(0, [4, 3, 2, 1]) },
+  { name: 'Light Sleeper', tip: 'Baba sleeps light today. Hit the bottom row in quick, clean shots.', stones: 7, spare: 2, sens: 1.15, window: 1, tins: stack(0, [4, 3, 2, 1]) },
   { name: 'Tight Gaps', tip: 'The stool is right in front of the window. Careful!', stones: 6, spare: 2, window: 1, tins: stack(-0.6, [2, 1]), stool: { x: 0.85, z: -5.6, h: 1.3, tins: [2, 1] } },
   { name: 'Evening Raid', tip: 'Getting dark. One more raid before dinner.', stones: 8, spare: 2, evening: 1, wind: -1.6, window: 1, tins: [...stack(-0.4, [2, 1]), ...stack(0.6, [1])], mangoes: [{ x: -1.8, y: 4.3, ripe: 1 }, { x: -0.6, y: 3.6, ripe: 1 }, { x: 0.1, y: 4.6, ripe: 1 }, { x: -1.1, y: 5.0, ripe: 0 }], goalMango: 3 },
   { name: 'Baba Dey Look', tip: 'When Baba is at the window, DON\'T SHOOT.', stones: 9, spare: 2, window: 1, peek: 1, tins: [...stack(-0.75, [2, 1]), ...stack(1.25, [2, 1])], mangoes: [{ x: -1.3, y: 3.7, ripe: 1 }, { x: -0.4, y: 4.4, ripe: 1 }, { x: -1.9, y: 4.6, ripe: 1 }], goalMango: 3 },
 ];
 const NIGHT_LEVELS = [
   { name: 'Lights Out', tip: "When NEPA takes light, Baba's gen covers your noise. Shoot in the dark!", stones: 6, spare: 2, tins: [...stack(0, [2, 1]), ...stack(-0.75, [1]), ...stack(0.75, [1])] },
-  { name: 'Gen Cover', tip: 'He sleeps light tonight. Wait for the gen, then fire.', stones: 6, spare: 1, sens: 1.8, tins: stack(0, [3, 2, 1]) },
+  { name: 'Gen Cover', tip: 'He sleeps light tonight. Wait for the gen, then fire.', stones: 6, spare: 1, sens: 1.4, tins: stack(0, [3, 2, 1]) },
   { name: 'Moonlight Mangoes', tip: 'Ripe ones only. Hard to tell in the dark!', stones: 6, spare: 1, window: 1, mangoes: [{ x: -1.2, y: 3.6, ripe: 1 }, { x: -0.4, y: 4.3, ripe: 1 }, { x: 0.3, y: 3.6, ripe: 1 }, { x: -1.6, y: 4.6, ripe: 0 }], goalMango: 3 },
   { name: 'Swing In The Dark', tip: 'Cut down the swinging tin before the light comes back.', stones: 6, spare: 2, window: 1, tins: stack(0.6, [2, 1]), swing: { x: -0.4, y: 4.0, len: 1.0 } },
   { name: 'Lamp Stool', tip: 'Tins on the stool, right under the lamp.', stones: 6, spare: 2, window: 1, tins: stack(-0.5, [2, 1]), stool: { x: 0.7, z: -4.6, h: 1.25, tins: [2, 1] } },
@@ -448,7 +448,9 @@ function onTinHit(tin, e) {
   tin.cd = 0.07;
   const i = clamp(v / 6, 0.12, 1);
   AU.fx.clang(i, other === 'ground' ? 420 + Math.random() * 120 : undefined);
-  addNoise((other === 'ground' ? 0.055 : 0.03) * i + 0.006);
+  // each tin can only make so much noise: bouncing and rolling on the ground stops adding once it has clanged
+  const add = Math.min((other === 'ground' ? 0.05 : 0.028) * i + 0.005, Math.max(0, 0.075 - (tin.made || 0)));
+  tin.made = (tin.made || 0) + add; addNoise(add);
   if (other === 'stone' || v > 2.5) { dust(tin.body.position, 3); agamaScare(tin.body.position); }
 }
 function onMangoHit(mg, e) {
